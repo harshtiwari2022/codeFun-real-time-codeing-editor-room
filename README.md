@@ -3,6 +3,8 @@
 A **real-time collaborative code editor** built using **React, Node.js, Express, and WebSockets (Socket.IO)**.  
 It allows multiple users to **write, edit, and share code simultaneously** with live synchronization across clients.  
 
+<img width="1886" height="975" alt="Screenshot 2025-08-23 151259" src="https://github.com/user-attachments/assets/0eaeda45-44fa-4cb9-bdff-763239d5eb5b" />
+
 ---
 
 ## ✨ Features  
@@ -47,7 +49,6 @@ cd ../client
 npm start
 
 # 📸 Screenshots
-<img width="1886" height="975" alt="Screenshot 2025-08-23 151259" src="https://github.com/user-attachments/assets/0eaeda45-44fa-4cb9-bdff-763239d5eb5b" />
 <img width="1888" height="847" alt="Screenshot 2025-08-23 151320" src="https://github.com/user-attachments/assets/4b61f613-edc9-40a5-bcce-d86ae2007169" />
 
 <img width="1870" height="956" alt="Screenshot 2025-08-23 151334" src="https://github.com/user-attachments/assets/066424fb-4090-487c-ab85-4276eefd4c0e" />
