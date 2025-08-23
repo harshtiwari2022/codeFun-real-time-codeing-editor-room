@@ -56,7 +56,5 @@ npm start
 
 
 <img width="1854" height="944" alt="Screenshot 2025-08-23 151346" src="https://github.com/user-attachments/assets/62a04a40-4163-4421-a5d7-4ff7edf5aec9" />
-#📬 Contact
-Email:harshtiwari2022b031@gmail.com
 
 
