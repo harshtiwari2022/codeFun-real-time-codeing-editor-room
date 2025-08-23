@@ -1,109 +1,61 @@
+# 📝 Real-Time Collaborative Code Editor  
 
-CodeFun – Real-Time Collaborative Coding Editor Room
+A **real-time collaborative code editor** built using **React, Node.js, Express, and WebSockets (Socket.IO)**.  
+It allows multiple users to **write, edit, and share code simultaneously** with live synchronization across clients.  
 
+---
 
-CodeFun is a modern web application that enables multiple users to collaboratively write and edit code in real-time within shared coding rooms. It offers a seamless coding experience with live updates, multi-cursor support, and communication tools, designed for developers, teams, and educators.
+## ✨ Features  
+- 👥 Multiple users can edit the same file in real-time  
+- 🔄 Automatic synchronization of code across all connected clients  
+- 🖥️ Code editor with syntax highlighting  
+- 🔑 Create and join rooms with unique IDs  
+- 📬 Chat/communication support (if added)  
+- 🌐 Responsive UI with modern design  
 
-Key Features
-Real-time Collaboration: Simultaneous multi-user editing with live cursor tracking and conflict resolution.
+---
 
-Syntax Highlighting: Supports multiple programming languages for enhanced readability.
+## 🛠️ Tech Stack  
+- **Frontend:** React.js, Tailwind CSS, CodeMirror/Monaco Editor  
+- **Backend:** Node.js, Express.js  
+- **Real-Time Communication:** WebSockets (Socket.IO)  
+- **Deployment:** Vercel (frontend), Render/Heroku (backend)  
 
-Integrated Chat: Allows participants to communicate within the coding room.
+---
 
-Room Management: Create or join coding rooms via unique room IDs.
+## 🚀 Getting Started  
 
-Code Persistence: Save and export code snippets for later use.
+### 1. Clone the repository  
+`bash
+git clone https://github.com/username/realtime-code-editor.git
+cd realtime-code-editor
 
-Responsive Design: Optimized for both desktop and mobile devices.
-
-Technology Stack
-Frontend: React, Monaco Editor (or CodeMirror)
-
-Backend: Node.js, Express, Socket.IO
-
-Database: MongoDB (for user/session persistence) (optional)
-
-Deployment: Heroku, Vercel (optional)
-
-Getting Started
-Prerequisites
-Node.js (version X.X.X or later)
-
-npm (version X.X.X or later)
-
-MongoDB instance (if persistence is enabled)
-
-Installation
-Clone the repository:
-
-bash
-Copy
-Edit
-git clone https://github.com/yourusername/codefun-real-time-coding-editor-room.git
-cd codefun-real-time-coding-editor-room
-Install dependencies:
-
-Backend:
-
-bash
-Copy
-Edit
+# Install backend dependencies
 cd server
 npm install
-Frontend:
 
-bash
-Copy
-Edit
+# Install frontend dependencies
 cd ../client
 npm install
-Configure environment variables:
 
-Create a .env file inside the server directory with the following variables:
-
-env
-Copy
-Edit
-PORT=5000
-MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret_key
-Adjust or add variables based on your setup.
-
-Running the Application
-Start the backend server:
-
-bash
-Copy
-Edit
+# Start backend
 cd server
-npm run dev
-Start the frontend development server:
+npm start
 
-bash
-Copy
-Edit
+# Start frontend
 cd ../client
 npm start
-Open your browser and navigate to http://localhost:3000 to access the application.
 
-Usage
-Create a new coding room or join an existing room using a unique ID.
+# 📸 Screenshots
+<img width="1886" height="975" alt="Screenshot 2025-08-23 151259" src="https://github.com/user-attachments/assets/0eaeda45-44fa-4cb9-bdff-763239d5eb5b" />
+<img width="1888" height="847" alt="Screenshot 2025-08-23 151320" src="https://github.com/user-attachments/assets/4b61f613-edc9-40a5-bcce-d86ae2007169" />
 
-Collaborate with other participants in real-time.
+<img width="1870" height="956" alt="Screenshot 2025-08-23 151334" src="https://github.com/user-attachments/assets/066424fb-4090-487c-ab85-4276eefd4c0e" />
 
-Utilize the integrated chat for communication.
 
-Save your code snippets or export them as needed.
 
-Contributing
-Contributions are welcome. Please fork the repository and submit a pull request with your improvements or bug fixes. For major changes, kindly open an issue first to discuss your ideas.
+<img width="1854" height="944" alt="Screenshot 2025-08-23 151346" src="https://github.com/user-attachments/assets/62a04a40-4163-4421-a5d7-4ff7edf5aec9" />
+#📬 Contact
+Email:harshtiwari2022b031@gmail.com
 
-License
-This project is licensed under the MIT License. See the LICENSE file for details.
-
-Contact
-Your Name
-Email: your.email@example.com
-GitHub: https://github.com/yourusername
 
