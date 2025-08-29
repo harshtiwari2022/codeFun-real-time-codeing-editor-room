@@ -170,12 +170,12 @@ export default function Home() {
     </ul>
 
     <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
-      {/* <button className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-xl font-semibold text-lg transition shadow-lg">
+      <button className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-xl font-semibold text-lg transition shadow-lg">
         Get Started
       </button>
       <button className="px-8 py-3 rounded-xl font-semibold text-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition">
         Learn More
-      </button> */}
+      </button>
     </div>
   </motion.div>
 </main>
