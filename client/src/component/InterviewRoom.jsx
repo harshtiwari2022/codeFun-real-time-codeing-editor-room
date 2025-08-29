@@ -1,159 +1,170 @@
-import React, { useEffect, useState, useRef } from "react";
-import { useParams, useSearchParams, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { v4 as uuidv4 } from "uuid";
 
-export default function InterviewRoom() {
-  const { roomId } = useParams();
-  const [searchParams] = useSearchParams();
+export default function Student() {
   const navigate = useNavigate();
-
-  const [email, setEmail] = useState("");
-  const [authenticated, setAuthenticated] = useState(false);
-  const [timer, setTimer] = useState(60 * 30); // 30 minutes timer
-  const [isLoading, setIsLoading] = useState(false);
-
-  const validateEmail = (email) =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-
-  // Scroll ref for chat (placeholder)
-  const chatEndRef = useRef(null);
+  const [username, setUsername] = useState("");
+  const [roomId, setRoomId] = useState("");
+  const [joinedRooms, setJoinedRooms] = useState([]);
 
   useEffect(() => {
-    const authEmail = searchParams.get("auth");
-    if (authEmail && validateEmail(authEmail)) {
-      setEmail(authEmail);
-      setAuthenticated(true);
-    }
-  }, [searchParams]);
+    const savedName = localStorage.getItem("username") || "";
+    setUsername(savedName);
 
-  // Timer countdown
-  useEffect(() => {
-    if (!authenticated) return;
-    if (timer === 0) return alert("Interview time is up!");
+    const savedRooms = JSON.parse(localStorage.getItem("joinedRooms") || "[]");
+    setJoinedRooms(savedRooms);
+  }, []);
 
-    const interval = setInterval(() => {
-      setTimer((prev) => (prev > 0 ? prev - 1 : 0));
-    }, 1000);
+  const handleJoinRoom = () => {
+    if (!username.trim()) return alert("Please enter your username");
+    if (!roomId.trim()) return alert("Please enter a room code");
 
-    return () => clearInterval(interval);
-  }, [authenticated, timer]);
+    const newRoom = {
+      id: roomId.trim(),
+      joinedAt: new Date().toISOString(),
+    };
 
-  const handleManualAuth = () => {
-    if (!validateEmail(email)) {
-      alert("Please enter a valid email.");
-      return;
-    }
-    setIsLoading(true);
-    // Simulate async auth validation
-    setTimeout(() => {
-      setIsLoading(false);
-      setAuthenticated(true);
-    }, 1000);
+    const updatedRooms = [...joinedRooms, newRoom];
+    setJoinedRooms(updatedRooms);
+    localStorage.setItem("joinedRooms", JSON.stringify(updatedRooms));
+
+    localStorage.setItem("username", username.trim());
+    localStorage.setItem("roomId", roomId.trim());
+    navigate(`/editor/${roomId.trim()}`);
   };
 
-  const formatTime = (secs) => {
-    const m = Math.floor(secs / 60)
-      .toString()
-      .padStart(2, "0");
-    const s = (secs % 60).toString().padStart(2, "0");
-    return `${m}:${s}`;
+  const handleCreateRoom = () => {
+    if (!username.trim()) return alert("Please enter your username");
+
+    const newRoomId = uuidv4();
+    const newRoom = {
+      id: newRoomId,
+      joinedAt: new Date().toISOString(),
+    };
+
+    const updatedRooms = [...joinedRooms, newRoom];
+    setJoinedRooms(updatedRooms);
+    localStorage.setItem("joinedRooms", JSON.stringify(updatedRooms));
+
+    localStorage.setItem("username", username.trim());
+    localStorage.setItem("roomId", newRoomId);
+
+    navigator.clipboard.writeText(newRoomId);
+    alert("New Room Created & Room ID copied to clipboard");
+    navigate(`/editor/${newRoomId}`);
   };
 
-  if (!authenticated) {
-    return (
-      <div className="h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 px-4">
-        <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 space-y-6">
-          <h2 className="text-2xl font-semibold text-center text-purple-600">
-            Join Interview Room
-          </h2>
-          <p className="text-center text-sm text-gray-600 dark:text-gray-400">
-            Enter your email to join room <span className="font-medium">{roomId}</span>
-          </p>
-          <input
-            type="email"
-            autoFocus
-            placeholder="you@example.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            disabled={isLoading}
-            className="w-full p-3 rounded border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
-          />
-          <button
-            onClick={handleManualAuth}
-            disabled={isLoading}
-            className="w-full py-3 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white rounded-lg font-semibold transition"
-          >
-            {isLoading ? "Joining..." : "Join Interview"}
-          </button>
-          <button
-            onClick={() => navigate("/")}
-            className="w-full mt-2 py-2 border border-purple-600 text-purple-600 rounded-lg hover:bg-purple-600 hover:text-white transition"
-          >
-            Back to Home
-          </button>
-        </div>
-      </div>
-    );
-  }
+  const handleLeaveRoom = (roomId) => {
+    const updatedRooms = joinedRooms.filter((room) => room.id !== roomId);
+    setJoinedRooms(updatedRooms);
+    localStorage.setItem("joinedRooms", JSON.stringify(updatedRooms));
+  };
 
-  // Authenticated interview UI
+  const handleCopyRoomId = (roomId) => {
+    navigator.clipboard.writeText(roomId);
+    alert("Room ID copied to clipboard");
+  };
+
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+    <div className="min-h-screen bg-white dark:bg-black text-gray-900 dark:text-white p-6 transition-colors duration-500">
       {/* Header */}
-      <header className="flex items-center justify-between px-6 py-4 bg-white dark:bg-gray-800 shadow-md">
-        <div>
-          <h1 className="text-2xl font-bold text-purple-600 cursor-pointer" onClick={() => navigate("/")}>
-            codeFun.. Interview
-          </h1>
-          <p className="text-sm text-gray-600 dark:text-gray-400">Room: <span className="font-mono">{roomId}</span></p>
-        </div>
-        <div className="text-right">
-          <p className="font-semibold">Candidate</p>
-          <p className="text-sm text-gray-600 dark:text-gray-400">{email}</p>
-          <p className="mt-1 font-mono text-yellow-500 text-lg">{formatTime(timer)}</p>
-        </div>
+      <header className="mb-10 text-center">
+        <h1 className="text-3xl font-bold text-purple-600 dark:text-purple-400">
+          Student Dashboard
+        </h1>
+        <p className="mt-2 text-gray-500 dark:text-gray-400 text-sm">
+          Manage your study rooms and collaborate in real-time.
+        </p>
       </header>
 
-      {/* Main content */}
-      <main className="flex flex-grow overflow-hidden p-6 gap-6">
-        {/* Left: Code editor placeholder */}
-        <section className="flex flex-col flex-1 bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
-          <h2 className="text-xl font-semibold mb-4">Code Editor</h2>
-          <textarea
-            readOnly
-            placeholder="Code editor will be here"
-            className="flex-grow w-full p-4 rounded border border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200 font-mono resize-none"
+      {/* Join/Create Section */}
+      <section className="mb-10 max-w-lg mx-auto bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-lg">
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-1">Your Name</label>
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="Enter your name"
+            className="w-full px-4 py-3 rounded-md border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
           />
-        </section>
+        </div>
 
-        {/* Right sidebar */}
-        <aside className="w-80 flex flex-col gap-6">
-          {/* Interview question */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
-            <h3 className="text-lg font-semibold mb-2">Interview Question</h3>
-            <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
-              {/* You can replace with dynamic question content */}
-              Implement a function to check if a string is a palindrome.
-            </p>
+        <div className="mb-6">
+          <label className="block text-sm font-medium mb-1">Join a Room</label>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={roomId}
+              onChange={(e) => setRoomId(e.target.value)}
+              placeholder="Enter room code"
+              className="flex-1 px-4 py-3 rounded-md border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+            />
+            <button
+              onClick={handleJoinRoom}
+              className="px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold transition"
+            >
+              Join
+            </button>
           </div>
+        </div>
 
-          {/* Chat placeholder */}
-          <div className="flex flex-col bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 h-60">
-            <h3 className="text-lg font-semibold mb-2">Chat</h3>
-            <div className="flex-grow overflow-y-auto border border-gray-300 dark:border-gray-700 rounded-md p-2 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
-              {/* Chat messages would appear here */}
-              <p className="text-center text-sm text-gray-400 mt-20">
-                Chat functionality coming soon...
-              </p>
-              <div ref={chatEndRef} />
-            </div>
-          </div>
-        </aside>
-      </main>
+        <div>
+          <button
+            onClick={handleCreateRoom}
+            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-lg font-semibold transition"
+          >
+            Create New Study Room
+          </button>
+        </div>
+      </section>
 
-      {/* Footer */}
-      <footer className="py-4 text-center text-sm text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700">
-        &copy; {new Date().getFullYear()} codeFun Interview Platform. All rights reserved.
-      </footer>
+      {/* Joined Rooms */}
+      <section className="max-w-2xl mx-auto">
+        <h2 className="text-xl font-semibold mb-4">Rooms You Joined</h2>
+        {joinedRooms.length > 0 ? (
+          <ul className="space-y-3">
+            {joinedRooms.map((room, idx) => (
+              <li
+                key={idx}
+                className="bg-gray-100 dark:bg-zinc-800 p-4 rounded-lg flex justify-between items-center shadow-sm"
+              >
+                <div>
+                  <p className="font-medium">Room ID: {room.id}</p>
+                  <p className="text-xs text-gray-500">
+                    Joined: {new Date(room.joinedAt).toLocaleString()}
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => navigate(`/editor/${room.id}`)}
+                    className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded text-sm"
+                  >
+                    Open
+                  </button>
+                  <button
+                    onClick={() => handleCopyRoomId(room.id)}
+                    className="bg-gray-300 hover:bg-gray-400 dark:bg-gray-700 dark:hover:bg-gray-600 text-black dark:text-white px-3 py-1 rounded text-sm"
+                  >
+                    Copy
+                  </button>
+                  <button
+                    onClick={() => handleLeaveRoom(room.id)}
+                    className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm"
+                  >
+                    Leave
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-gray-500 dark:text-gray-400 italic">
+            No rooms joined yet.
+          </p>
+        )}
+      </section>
     </div>
   );
-}
+} 

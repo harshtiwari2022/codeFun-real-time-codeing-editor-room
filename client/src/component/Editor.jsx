@@ -3,20 +3,12 @@ import { useParams, useNavigate } from "react-router-dom";
 import Editor from "@monaco-editor/react";
 import { io } from "socket.io-client";
 
-const languageOptions = [
-  { id: "javascript", name: "JavaScript" },
-  { id: "python", name: "Python" },
-  { id: "cpp", name: "C++" },
-  { id: "java", name: "Java" },
-];
-
 export default function EditorPage() {
   const { roomId } = useParams();
   const navigate = useNavigate();
 
   const [username, setUsername] = useState("Guest");
   const [code, setCode] = useState("// Start coding...");
-  const [language, setLanguage] = useState("javascript");
   const [connectedUsers, setConnectedUsers] = useState([]);
 
   const socket = useRef(null);
@@ -26,45 +18,42 @@ export default function EditorPage() {
     const storedName = localStorage.getItem("username") || "Guest";
     setUsername(storedName);
 
-    socket.current = io("http://localhost:5000");
-    socket.current.emit("join-room", roomId, storedName);
+    // Connect to Socket.IO server
+    socket.current = io("http://localhost:5000", { transports: ["websocket"] });
 
-    socket.current.on("code-change", (newCode) => {
+    // Join room
+    socket.current.emit("join-room", { roomId, username: storedName });
+
+    // Listen for code updates
+    socket.current.on("code-update", (newCode) => {
       if (newCode !== code) setCode(newCode);
     });
 
-    socket.current.on("language-change", (newLang) => {
-      if (newLang !== language) setLanguage(newLang);
-    });
-
+    // Listen for updated user list
     socket.current.on("update-users", (userList) => {
       setConnectedUsers(userList);
     });
 
+    // Clean up on unmount
     return () => {
-      socket.current.emit("leave-room", roomId, storedName);
+      socket.current.emit("leave-room", { roomId, username: storedName });
       socket.current.disconnect();
     };
-  }, [roomId]);
+  }, [roomId, code]);
 
+  // Handle local code change
   const onCodeChange = (newValue) => {
-    if (newValue !== code) {
-      setCode(newValue);
-      socket.current.emit("code-change", newValue, roomId);
-    }
+    setCode(newValue);
+    socket.current.emit("code-change", { roomId, code: newValue });
   };
 
-  const onLanguageChange = (e) => {
-    const selected = e.target.value;
-    if (selected !== language) {
-      setLanguage(selected);
-      socket.current.emit("language-change", selected, roomId);
-    }
+  const copyRoomId = () => {
+    navigator.clipboard.writeText(roomId);
+    alert("Room ID copied to clipboard!");
   };
 
-  const copyRoomId = () => navigator.clipboard.writeText(roomId);
   const leaveRoom = () => {
-    socket.current.emit("leave-room", roomId, username);
+    socket.current.emit("leave-room", { roomId, username });
     socket.current.disconnect();
     navigate("/");
   };
@@ -102,7 +91,7 @@ export default function EditorPage() {
         </div>
       </aside>
 
-      {/* Main */}
+      {/* Main Editor */}
       <main className="flex-1 flex flex-col">
         {/* Topbar */}
         <header className="flex justify-between items-center px-6 py-4 bg-zinc-900 border-b border-zinc-800 shadow-md">
@@ -120,18 +109,6 @@ export default function EditorPage() {
           </div>
 
           <div className="flex items-center gap-3">
-            <select
-              value={language}
-              onChange={onLanguageChange}
-              className="bg-zinc-800 text-sm border border-zinc-700 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-purple-500"
-            >
-              {languageOptions.map(({ id, name }) => (
-                <option key={id} value={id}>
-                  {name}
-                </option>
-              ))}
-            </select>
-
             <button
               onClick={copyRoomId}
               className="bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded text-sm transition"
@@ -141,11 +118,11 @@ export default function EditorPage() {
           </div>
         </header>
 
-        {/* Editor */}
+        {/* Monaco Editor */}
         <div className="flex-1">
           <Editor
             height="100%"
-            language={language}
+            language="javascript"
             value={code}
             theme="vs-dark"
             onChange={onCodeChange}
@@ -154,7 +131,6 @@ export default function EditorPage() {
               fontSize: 14,
               minimap: { enabled: false },
               padding: { top: 10 },
-              smoothScrolling: true,
               scrollBeyondLastLine: false,
             }}
           />

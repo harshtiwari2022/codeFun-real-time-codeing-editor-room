@@ -1,6 +1,8 @@
+// src/pages/Student.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
+import { getRooms, createRoom, joinRoom } from "../service/api";
 
 export default function Student() {
   const navigate = useNavigate();
@@ -8,113 +10,110 @@ export default function Student() {
   const [roomId, setRoomId] = useState("");
   const [joinedRooms, setJoinedRooms] = useState([]);
 
+  // Fetch rooms from backend
   useEffect(() => {
     const savedName = localStorage.getItem("username") || "";
     setUsername(savedName);
 
-    // Load joined rooms from localStorage or backend here (mocked for now)
-    const savedRooms = JSON.parse(localStorage.getItem("joinedRooms") || "[]");
-    setJoinedRooms(savedRooms);
+    const fetchRooms = async () => {
+      try {
+        const rooms = await getRooms();
+        setJoinedRooms(rooms);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchRooms();
   }, []);
 
-  const handleJoinRoom = () => {
-    if (!username.trim()) return alert("Please enter your username");
-    if (!roomId.trim()) return alert("Please enter a room code");
-
-    // Save to joined rooms
-    const updatedRooms = [...joinedRooms, roomId.trim()];
-    setJoinedRooms(updatedRooms);
-    localStorage.setItem("joinedRooms", JSON.stringify(updatedRooms));
-
-    localStorage.setItem("username", username.trim());
-    localStorage.setItem("roomId", roomId.trim());
-    navigate(`/editor/${roomId.trim()}`);
+  const handleJoinRoom = async () => {
+    if (!username.trim() || !roomId.trim()) return alert("Enter all fields");
+    try {
+      const room = await joinRoom(roomId.trim(), username.trim());
+      setJoinedRooms((prev) => [...prev, room]);
+      localStorage.setItem("username", username.trim());
+      navigate(`/editor/${room.roomId}`);
+    } catch (err) {
+      alert(err.response?.data?.message || "Error joining room");
+    }
   };
 
-  const handleCreateRoom = () => {
-    if (!username.trim()) return alert("Please enter your username");
-
+  const handleCreateRoom = async () => {
+    if (!username.trim()) return alert("Enter your username");
     const newRoomId = uuidv4();
-    const updatedRooms = [...joinedRooms, newRoomId];
-    setJoinedRooms(updatedRooms);
-    localStorage.setItem("joinedRooms", JSON.stringify(updatedRooms));
-
-    localStorage.setItem("username", username.trim());
-    localStorage.setItem("roomId", newRoomId);
-
-    navigator.clipboard.writeText(newRoomId);
-    alert("New Room Created & Room ID copied to clipboard");
-    navigate(`/editor/${newRoomId}`);
+    try {
+      const room = await createRoom(newRoomId, username.trim());
+      setJoinedRooms((prev) => [...prev, room]);
+      localStorage.setItem("username", username.trim());
+      navigator.clipboard.writeText(newRoomId);
+      alert("New Room Created & Room ID copied");
+      navigate(`/editor/${room.roomId}`);
+    } catch (err) {
+      alert(err.response?.data?.message || "Error creating room");
+    }
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black text-gray-900 dark:text-white p-6 transition-colors duration-500">
-      <header className="mb-8 flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-purple-600 dark:text-purple-400">Student Dashboard</h1>
-      </header>
+    <div className="min-h-screen p-6 bg-white dark:bg-black text-gray-900 dark:text-white">
+      <h1 className="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-8">
+        Student Dashboard
+      </h1>
 
-      <section className="mb-10 max-w-xl mx-auto bg-white dark:bg-zinc-900 p-6 rounded-lg shadow-lg">
+      <div className="max-w-xl mx-auto bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-lg mb-10">
         <div className="mb-4">
-          <label className="block text-sm font-medium mb-1">Your Name</label>
           <input
             type="text"
+            placeholder="Enter your name"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            placeholder="Enter your name"
-            className="w-full px-4 py-3 rounded-md border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="w-full px-4 py-3 rounded-md border focus:ring-2 focus:ring-purple-500"
           />
         </div>
-
-        <div className="mb-6">
-          <label className="block text-sm font-medium mb-1">Join a Room</label>
+        <div className="mb-4">
           <input
             type="text"
+            placeholder="Enter room code"
             value={roomId}
             onChange={(e) => setRoomId(e.target.value)}
-            placeholder="Enter room code"
-            className="w-full px-4 py-3 rounded-md border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="w-full px-4 py-3 rounded-md border focus:ring-2 focus:ring-purple-500"
           />
           <button
             onClick={handleJoinRoom}
-            className="mt-3 w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-lg font-semibold transition"
+            className="mt-3 w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-lg"
           >
             Join Room
           </button>
         </div>
+        <button
+          onClick={handleCreateRoom}
+          className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-lg"
+        >
+          Create New Study Room
+        </button>
+      </div>
 
-        <div>
-          <button
-            onClick={handleCreateRoom}
-            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-lg font-semibold transition"
-          >
-            Create New Study Room
-          </button>
-        </div>
-      </section>
-
-      <section className="max-w-xl mx-auto">
-        <h2 className="text-xl font-semibold mb-4">Rooms You Joined</h2>
-        {joinedRooms.length > 0 ? (
-          <ul className="space-y-2">
-            {joinedRooms.map((room, idx) => (
+      <div className="max-w-xl mx-auto bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-lg">
+        <h2 className="text-xl font-semibold mb-4">Joined Rooms</h2>
+        {joinedRooms.length === 0 ? (
+          <p>You haven't joined any rooms yet.</p>
+        ) : (
+          <ul className="space-y-3">
+            {joinedRooms.map((room) => (
               <li
-                key={idx}
-                className="bg-gray-200 dark:bg-zinc-800 p-3 rounded-lg flex justify-between items-center"
+                key={room.roomId}
+                className="flex justify-between items-center bg-gray-100 dark:bg-zinc-800 p-3 rounded-lg"
               >
-                <span className="truncate max-w-xs">Room ID: {room}</span>
-                <button
-                  onClick={() => navigate(`/editor/${room}`)}
-                  className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-1 rounded"
+                <span
+                  className="cursor-pointer text-purple-600 dark:text-purple-400 hover:underline"
+                  onClick={() => navigate(`/editor/${room.roomId}`)}
                 >
-                  Open
-                </button>
+                  {room.roomId}
+                </span>
               </li>
             ))}
           </ul>
-        ) : (
-          <p className="text-gray-500 dark:text-gray-400 italic">No rooms joined yet.</p>
         )}
-      </section>
+      </div>
     </div>
   );
 }
