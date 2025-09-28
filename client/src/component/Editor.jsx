@@ -19,7 +19,7 @@ export default function EditorPage() {
     setUsername(storedName);
 
     // Connect to Socket.IO server
-    socket.current = io("http://localhost:5000", { transports: ["websocket"] });
+    socket.current = io("http://localhost:5001", { transports: ["websocket"] });
 
     // Join room
     socket.current.emit("join-room", { roomId, username: storedName });

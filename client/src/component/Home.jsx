@@ -91,8 +91,10 @@ export default function Home() {
     </nav>
 
     {/* Call to action */}
-    <button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 text-white px-5 py-2.5 rounded-xl font-semibold shadow-lg transition">
-      Get Started
+    <button 
+    onClick={()=>navigate("/codereview")}
+    className="  hover:scale-105 hover:opacity-95  bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 text-white px-5 py-2.5 rounded-xl font-semibold shadow-lg transition">
+      AI Code Review
     </button>
   </div>
 </header>
@@ -170,12 +172,12 @@ export default function Home() {
     </ul>
 
     <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
-      <button className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-xl font-semibold text-lg transition shadow-lg">
+      {/* <button className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-xl font-semibold text-lg transition shadow-lg">
         Get Started
       </button>
       <button className="px-8 py-3 rounded-xl font-semibold text-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition">
         Learn More
-      </button>
+      </button> */}
     </div>
   </motion.div>
 </main>
@@ -237,7 +239,12 @@ export default function Home() {
     {/* CTA Button */}
     <button
       onClick={() => navigate("/student")}
-      className="mt-12 bg-gradient-to-r from-yellow-500 to-orange-500 hover:opacity-90 text-black px-8 py-3 rounded-xl font-semibold text-lg shadow-md transition"
+      className="mt-12 
+         bg-gradient-to-r from-yellow-400 via-yellow-500 to-orange-500 
+         text-black px-8 py-3 rounded-xl font-semibold text-lg 
+         shadow-md transition duration-500 ease-in-out
+         hover:scale-105 hover:opacity-95 
+         hover:shadow-[0_0_12px_rgba(255,215,0,0.4),0_0_25px_rgba(255,165,0,0.3)]"
     >
       🚀 Join as Student
     </button>
@@ -302,7 +309,8 @@ export default function Home() {
     {/* CTA */}
     <button
       onClick={() => navigate("/interview")}
-      className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:opacity-90 text-white px-8 py-3 rounded-xl font-semibold text-lg shadow-md transition"
+      className="    hover:scale-105 hover:opacity-95
+    bg-gradient-to-r from-purple-600 to-indigo-600 hover:opacity-90 text-white px-8 py-3 rounded-xl font-semibold text-lg shadow-md transition"
     >
       🎯 Start Interview Room
     </button>

@@ -5,6 +5,7 @@ import http from "http"; // Needed for Socket.IO
 import { Server } from "socket.io";
 import connectDB from "./config/db.js";
 import roomRoutes from "./routes/roomroutes.js";
+import routesai from "./routes/routesai.js";
 import { errorHandler, notFound } from "./middleware/errorMiddleware.js";
 
 dotenv.config();
@@ -15,10 +16,12 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/rooms", roomRoutes);
+app.use('/api/ai',routesai);
 
 // Error Middleware
 app.use(notFound);
 app.use(errorHandler);
+
 
 // Create HTTP server for Socket.IO
 const server = http.createServer(app);
@@ -64,5 +67,5 @@ io.on("connection", (socket) => {
 });
 
 // Start server
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 server.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
