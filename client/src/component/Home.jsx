@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom"
 import { v4 as uuidv4 } from "uuid";
 import { motion } from "framer-motion";
 import { SunIcon, MoonIcon } from "@heroicons/react/24/solid";
