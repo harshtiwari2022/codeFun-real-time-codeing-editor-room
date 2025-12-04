@@ -21,7 +21,7 @@ export default function About() {
             About CodeFun
           </h1>
           <p className="text-gray-600 dark:text-gray-400 text-lg md:text-xl leading-relaxed max-w-3xl mx-auto">
-            CodeFun is a real-time collaborative coding platform designed for developers, educators, and learners.
+            CodeFun is a real-time collaborative coding platform designed for developers,educators, and learners.
             Whether you're pair programming, mentoring, or working on a team project, CodeFun makes collaboration seamless and intuitive.
           </p>
         </section>
@@ -38,7 +38,7 @@ export default function About() {
           </ul>
         </section>
 
-        {/* Tech Stack */}
+        {/* Tech Stacks */}
         <section className="text-center">
           <h2 className="text-3xl font-semibold mb-4 text-gray-900 dark:text-white">Tech Stack</h2>
           <p className="text-gray-600 dark:text-gray-400 text-lg">CodeFun is built using the modern web ecosystem:</p>
