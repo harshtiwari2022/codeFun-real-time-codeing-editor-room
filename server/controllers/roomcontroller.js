@@ -22,8 +22,6 @@ export const createRoom = async (req, res) => {
   }
 };
 
-// @desc    Join a room
-// @route   POST /api/rooms/join
 export const joinRoom = async (req, res) => {
   try {
     const { roomId, username } = req.body;
